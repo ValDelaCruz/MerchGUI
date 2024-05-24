@@ -602,48 +602,49 @@
 
     <!-- FUNCTIONALITIES -->
     <script>
-        //Input field changes based on the selected option in the dropdown menu
-        document.getElementById('floatingSelect').addEventListener('change', function() {
-            var inputField = document.getElementById('acc_id');
-            var inputLabel = document.getElementById('inputLabel');
-            var selectedValue = this.value;
+        // Input field changes based on the selected option in the dropdown menu
+        document.getElementById('floatingSelect').addEventListener('change', function(event) {
+            const inputField = document.getElementById('acc_id');
+            const inputLabel = document.getElementById('inputLabel');
+            const selectedValue = event.target.value;
 
-            if (selectedValue === '1') {
-                inputField.placeholder = 'Account ID';
-                inputLabel.textContent = 'Account ID';
-            } else if (selectedValue === '2') {
-                inputField.placeholder = 'MSISDN';
-                inputLabel.textContent = 'MSISDN';
-            } else if (selectedValue === '3') {
-                inputField.placeholder = 'Agent Code';
-                inputLabel.textContent = 'Agent Code';
+            switch (selectedValue) {
+                case '1':
+                    inputField.placeholder = 'Account ID';
+                    inputLabel.textContent = 'Account ID';
+                    break;
+                case '2':
+                    inputField.placeholder = 'MSISDN';
+                    inputLabel.textContent = 'MSISDN';
+                    break;
+                case '3':
+                    inputField.placeholder = 'Agent Code';
+                    inputLabel.textContent = 'Agent Code';
+                    break;
+                default:
+                    break;
             }
         });
 
-        // FOR SHOW PASSWORD
-        const passwordInputs = document.querySelectorAll('.showPass');
-        const showPassCheckboxes = document.querySelectorAll('.showPass');
+        // For SHOW PASSWORD functionality
+        const passwordInputs = document.querySelectorAll('input[type="password"]');
+        const showPassCheckboxes = document.querySelectorAll('.showPassCheckbox');
 
-        // Add event listener to check if the password input field has input
+        // Checking if the password input field has input
         passwordInputs.forEach(function(input) {
             input.addEventListener('input', function() {
-                // Find the corresponding checkbox for this input
-                const checkbox = this.nextElementSibling.querySelector('.showPass');
-                // Enable the checkbox if there is input in the password field, otherwise disable it
-                checkbox.disabled = !this.value;
+                const checkbox = input.parentElement.querySelector('.showPassCheckbox');
+                checkbox.disabled = !input.value;
             });
         });
 
-        // Add event listener to the checkboxes
+        // For checkboxes
         showPassCheckboxes.forEach(function(checkbox) {
             checkbox.addEventListener('change', function() {
-                // Find the corresponding password input for this checkbox
-                const passwordInput = this.parentElement.parentElement.querySelector('.showPass');
-                // If checkbox is checked, show password, otherwise hide it
-                passwordInput.type = this.checked ? 'text' : 'password';
+                const passwordInput = checkbox.closest('.password-container').querySelector('input[type="password"]');
+                passwordInput.type = checkbox.checked ? 'text' : 'password';
             });
         });
     </script>
 </body>
-
 </html>

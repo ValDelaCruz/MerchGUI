@@ -332,140 +332,130 @@
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-        //Sorting Table
+        // Sorting Table with DataTables
         $(document).ready(function() {
             $('#myTable').DataTable({
-                paging: false, // Disable paging
-                searching: false, // Disable search
-                info: false, // Disable info text
-                ordering: true // Enable sorting
+                paging: false,
+                searching: false,
+                info: false,
+                ordering: true
             });
         });
 
         // Function to handle subscriber table operations
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", () => {
             const entriesSelect = document.getElementById("entriesSelect");
             const entryInfo = document.getElementById("entryInfo");
             const table = document.getElementById("myTable");
-            const tbody = table.getElementsByTagName("tbody")[0];
-            const rows = Array.from(tbody.getElementsByTagName("tr"));
+            const tbody = table.querySelector("tbody");
+            const rows = Array.from(tbody.querySelectorAll("tr"));
 
             let rowsPerPage = parseInt(entriesSelect.value);
             let currentPage = 1;
 
-            // Update the label to show the number of entries displayed
-            function updateEntryInfo() {
+            // Updates the label to show the number of entries displayed
+            const updateEntryInfo = () => {
                 const totalEntries = rows.length;
                 const showingStart = (currentPage - 1) * rowsPerPage + 1;
                 const showingEnd = Math.min(currentPage * rowsPerPage, totalEntries);
                 entryInfo.textContent = `Showing ${showingStart} to ${showingEnd} of ${totalEntries} entries`;
-            }
+            };
 
-            // Display the rows for the current page
-            function displayTableRows() {
+            // Displays the rows on the current page
+            const displayTableRows = () => {
                 const start = (currentPage - 1) * rowsPerPage;
                 const end = start + rowsPerPage;
 
                 rows.forEach((row, index) => {
-                    if (index >= start && index < end) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
+                    row.style.display = index >= start && index < end ? "" : "none";
                 });
 
                 updateEntryInfo();
-            }
+            };
 
-            // Update the pagination buttons based on the current page
-            function updatePaginationButtons() {
-                // Add logic for pagination buttons if needed
-            }
+            // Updates the pagination buttons based on the current page
+            const updatePaginationButtons = () => {
+                const totalPages = Math.ceil(rows.length / rowsPerPage);
+                const prevButton = document.querySelector("#pagination button:first-child");
+                const nextButton = document.querySelector("#pagination button:last-child");
+                prevButton.disabled = currentPage === 1;
+                nextButton.disabled = currentPage === totalPages;
+            };
 
-            // Event listener for changes in the number of entries per page
-            entriesSelect.addEventListener("change", function() {
-                rowsPerPage = parseInt(this.value);
+            // Changes in the number of entries per page
+            entriesSelect.addEventListener("change", (event) => {
+                rowsPerPage = parseInt(event.target.value);
                 currentPage = 1;
                 updatePaginationButtons();
                 displayTableRows();
             });
 
-            // Display the initial table rows
+            // Initial display
             displayTableRows();
         });
-
-        // Function to dynamically display entry information
-        function displayEntryInfo(startIndex, endIndex, totalEntries) {
-            const entryInfoSpan = document.getElementById("entryInfo");
-            entryInfoSpan.textContent = `Showing ${startIndex} to ${endIndex} of ${totalEntries} entries`;
-        }
 
         // Function to handle custom pagination
         let currentPage = 1;
         const rowsPerPage = 5;
         const tableRows = document.querySelectorAll("#myTableBody tr");
 
-        // Go to a specific page
-        function goToPage(pageNumber) {
+        // Goes to a specific page
+        const goToPage = (pageNumber) => {
             currentPage = pageNumber;
             updatePaginationButtons();
             displayTableRows();
-        }
+        };
 
-        // Move to the previous page
-        function previousPage() {
+        //  Pagination Function - Previous Button 
+        const previousPage = () => {
             if (currentPage > 1) {
                 currentPage--;
                 updatePaginationButtons();
                 displayTableRows();
             }
-        }
+        };
 
-        // Move to the next page
-        function nextPage() {
+        //  Pagination Function - Next Button 
+        const nextPage = () => {
             const totalPages = Math.ceil(tableRows.length / rowsPerPage);
             if (currentPage < totalPages) {
                 currentPage++;
                 updatePaginationButtons();
                 displayTableRows();
             }
-        }
+        };
 
-        // Update the pagination buttons based on the current page
-        function updatePaginationButtons() {
+        // Pagination Function
+        const updatePaginationButtons = () => {
             const totalPages = Math.ceil(tableRows.length / rowsPerPage);
             const prevButton = document.querySelector("#pagination button:first-child");
             const nextButton = document.querySelector("#pagination button:last-child");
             prevButton.disabled = currentPage === 1;
             nextButton.disabled = currentPage === totalPages;
-        }
+        };
 
-        // Display the table rows for the current page
-        function displayTableRows() {
+        // Displays the table rows for the current page
+        const displayTableRows = () => {
             const startIndex = (currentPage - 1) * rowsPerPage;
             const endIndex = startIndex + rowsPerPage;
             tableRows.forEach((row, index) => {
-                if (index >= startIndex && index < endIndex) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
+                row.style.display = index >= startIndex && index < endIndex ? "" : "none";
             });
-        }
+        };
 
         // Initial setup
         updatePaginationButtons();
         displayTableRows();
 
-        // Event listener for searching/filtering
-        document.getElementById("myInput").addEventListener("input", function() {
-            const filter = this.value.toUpperCase();
+        // Searching/filtering
+        document.getElementById("myInput").addEventListener("input", (event) => {
+            const filter = event.target.value.toUpperCase();
             const tableRows = document.querySelectorAll("#myTableBody tr");
             tableRows.forEach(row => {
                 const tdValues = row.querySelectorAll("td");
                 let found = false;
                 tdValues.forEach(td => {
-                    if (td.textContent.toUpperCase().indexOf(filter) > -1) {
+                    if (td.textContent.toUpperCase().includes(filter)) {
                         found = true;
                     }
                 });
@@ -473,14 +463,13 @@
             });
         });
 
-        // Event listener for changing the number of entries per page
-        document.getElementById("entriesSelect").addEventListener("change", function() {
-            rowsPerPage = parseInt(this.value);
+        // Changing the number of entries per page
+        document.getElementById("entriesSelect").addEventListener("change", (event) => {
+            rowsPerPage = parseInt(event.target.value);
             currentPage = 1;
             updatePaginationButtons();
             displayTableRows();
         });
-
     </script>
 
 </body>

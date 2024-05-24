@@ -567,15 +567,15 @@
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-        //Function for Dropdown & input filter
+        // Function for Dropdown & Input filter
         const selectOption = document.getElementById('selectOption');
         const userInput = document.getElementById('userInput');
         const userInputLabel = document.getElementById('userInputLabel');
 
-        selectOption.addEventListener('change', function() {
+        selectOption.addEventListener('change', () => {
             const selectedValue = selectOption.value;
 
-            switch(selectedValue) {
+            switch (selectedValue) {
                 case '1':
                     userInput.setAttribute('placeholder', 'Username');
                     userInputLabel.innerText = 'Username';
@@ -593,93 +593,78 @@
             }
         });
 
-        //  Function for Input and Search button to load table data
-        document.addEventListener('DOMContentLoaded', function() {
+        // Function for Input and Search button to load table data
+        document.addEventListener('DOMContentLoaded', () => {
             const userInput = document.getElementById('userInput');
             const tableBody = document.getElementById('myTableBody');
-    
-            // Function to handle search button click event
-            document.getElementById('searchButton').addEventListener('click', function() {
+
+            // Function for Search Button
+            document.getElementById('searchButton').addEventListener('click', () => {
                 const searchValue = userInput.value.trim().toLowerCase();
-    
-                const rows = tableBody.getElementsByTagName('tr');
-                for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i];
-                    const username = row.getElementsByTagName('td')[1].innerText.trim().toLowerCase();
-                    const msisdn = row.getElementsByTagName('td')[2].innerText.trim().toLowerCase();
-    
+
+                const rows = tableBody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const username = row.querySelector('td:nth-child(2)').innerText.trim().toLowerCase();
+                    const msisdn = row.querySelector('td:nth-child(3)').innerText.trim().toLowerCase();
+
                     if (username.includes(searchValue) || msisdn.includes(searchValue)) {
                         row.style.display = '';
                     } else {
                         row.style.display = 'none';
                     }
-                }
+                });
             });
         });
 
-        //  Function for Sorting table & Disabling Unnecessary DataTable Functions
-        $(document).ready(function() {
+        // Function for Sorting table & Disabling Unnecessary DataTable Functions
+        $(document).ready(() => {
             $('#myTable').DataTable({
-                paging: false, 
+                paging: false,
                 searching: false,
                 info: false,
                 ordering: true
             });
         });
-        
+
         // Function to handle user table operations
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", () => {
             const entriesSelect = document.getElementById("entriesSelect");
             const entryInfo = document.getElementById("entryInfo");
-            const table = document.getElementById("myTable");
-            const tbody = table.getElementsByTagName("tbody")[0];
-            const rows = Array.from(tbody.getElementsByTagName("tr"));
+            const tableRows = Array.from(document.querySelectorAll("#myTableBody tr"));
 
             let rowsPerPage = parseInt(entriesSelect.value);
             let currentPage = 1;
 
-            function updateEntryInfo() {
-                const totalEntries = rows.length;
+            const updateEntryInfo = () => {
+                const totalEntries = tableRows.length;
                 const showingStart = (currentPage - 1) * rowsPerPage + 1;
                 const showingEnd = Math.min(currentPage * rowsPerPage, totalEntries);
                 entryInfo.textContent = `Showing ${showingStart} to ${showingEnd} of ${totalEntries} entries`;
-            }
+            };
 
-            // Display the rows for the current page
-            function displayTableRows() {
+            const displayTableRows = () => {
                 const start = (currentPage - 1) * rowsPerPage;
                 const end = start + rowsPerPage;
 
-                rows.forEach((row, index) => {
-                    if (index >= start && index < end) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
+                tableRows.forEach((row, index) => {
+                    row.style.display = (index >= start && index < end) ? "" : "none";
                 });
 
                 updateEntryInfo();
-            }
+            };
 
-            entriesSelect.addEventListener("change", function() {
-                rowsPerPage = parseInt(this.value);
+            entriesSelect.addEventListener("change", () => {
+                rowsPerPage = parseInt(entriesSelect.value);
                 currentPage = 1;
-                updatePaginationButtons();
                 displayTableRows();
             });
 
             displayTableRows();
         });
 
-        // Function to dynamically display entry information
-        function displayEntryInfo(startIndex, endIndex, totalEntries) {
-            const entryInfoSpan = document.getElementById("entryInfo");
-            entryInfoSpan.textContent = `Showing ${startIndex} to ${endIndex} of ${totalEntries} entries`;
-        }
-
-        // Function to handle custom pagination
+        // Pagination functions
         let currentPage = 1;
-        const rowsPerPage = 5;
+        let rowsPerPage = 5;
         const tableRows = document.querySelectorAll("#myTableBody tr");
 
         function goToPage(pageNumber) {
@@ -737,7 +722,7 @@
                 const tdValues = row.querySelectorAll("td");
                 let found = false;
                 tdValues.forEach(td => {
-                    if (td.textContent.toUpperCase().indexOf(filter) > -1) {
+                    if (td.textContent.toUpperCase().includes(filter)) {
                         found = true;
                     }
                 });
@@ -749,10 +734,8 @@
         document.getElementById("entriesSelect").addEventListener("change", function() {
             rowsPerPage = parseInt(this.value);
             currentPage = 1;
-            updatePaginationButtons();
             displayTableRows();
         });
-
     </script>
 </body>
 </html>

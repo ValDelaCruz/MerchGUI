@@ -127,29 +127,29 @@
     </div>
 
     <script>
-        //FOR SHOW PASSWORD
+        // FOR SHOW PASSWORD
         const passwordInput = document.getElementById('inputPassword');
         const showPassCheckbox = document.getElementById('showPass');
 
         // Add event listener to check if the password input field has input
         passwordInput.addEventListener('input', function() {
             // Enable the checkbox if there is input in the password field, otherwise disable it
-            showPassCheckbox.disabled = !this.value;
+            showPassCheckbox.disabled = !passwordInput.value;
         });
 
         // Add event listener to the checkbox
         showPassCheckbox.addEventListener('change', function() {
             // If checkbox is checked, show password, otherwise hide it
-            passwordInput.type = this.checked ? 'text' : 'password';
+            passwordInput.type = showPassCheckbox.checked ? 'text' : 'password';
         });
 
-        //FOR OTP INPUTS
+        // FOR OTP INPUTS
         // Get all the OTP input fields
         const otpInputs = document.querySelectorAll('input[type="number"]');
 
         // Add event listener to each input field
-        otpInputs.forEach((input, index) => {
-            input.addEventListener('input', (event) => {
+        otpInputs.forEach(function(input, index) {
+            input.addEventListener('input', function(event) {
                 // Remove any non-numeric characters from the input value
                 event.target.value = event.target.value.replace(/[^0-9]/g, '');
 
@@ -162,7 +162,6 @@
                 }
             });
         });
-
     </script>
 </body>
 </html>
