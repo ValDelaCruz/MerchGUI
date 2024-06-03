@@ -327,7 +327,7 @@
                                     <td>
                                         <!-- Toggle Slider -->
                                         <div class="form-switch">
-                                            <input class="form-check-input toggle-switch" type="checkbox">
+                                            <input class="form-check-input toggle-switch" type="checkbox" >
                                         </div>
                                     </td>
                                 </tr>
@@ -455,6 +455,26 @@
         </section>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="noButton" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" id="yesButton" class="btn btn-primary">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
   
     <!-- Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -467,14 +487,51 @@
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleSwitches = document.querySelectorAll('.toggle-switch');
+            let currentToggleSwitch = null;
+            const modalMessage = document.getElementById('modalMessage');
+            const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+        
+            toggleSwitches.forEach((toggleSwitch) => {
+                toggleSwitch.addEventListener('change', (event) => {
+                    // Prevent the default change event until confirmation
+                    event.preventDefault();
+        
+                    currentToggleSwitch = toggleSwitch;
+                    const row = toggleSwitch.closest('tr');
+                    const userType = row.querySelector('td:nth-child(5)').textContent;
+                    const moduleAction = toggleSwitch.checked ? 'ENABLE' : 'DISABLE';
+        
+                    modalMessage.textContent = `Are you sure you want to ${moduleAction} this module for user ${userType}?`;
+                    confirmationModal.show();
+                });
+            });
+        
+            document.getElementById('noButton').addEventListener('click', () => {
+                if (currentToggleSwitch) {
+                    // Revert the toggle switch state
+                    currentToggleSwitch.checked = !currentToggleSwitch.checked;
+                    currentToggleSwitch = null;
+                }
+                confirmationModal.hide(); // Hide the modal
+            });
+        
+            document.getElementById('yesButton').addEventListener('click', () => {
+                // Confirm the toggle switch state change
+                currentToggleSwitch = null;
+                confirmationModal.hide(); // Hide the modal
+            });
+        });
+        
         // Function for Dropdown & input filter
         const selectOption = document.getElementById('selectOption');
         const userInput = document.getElementById('userInput');
         const userInputLabel = document.getElementById('userInputLabel');
-
+        
         selectOption.addEventListener('change', () => {
             const selectedValue = selectOption.value;
-
+        
             switch (selectedValue) {
                 case '1':
                     userInput.setAttribute('placeholder', 'IT_ADMIN_MERCHANT');
@@ -492,8 +549,7 @@
                     break;
             }
         });
-
-        //---------------------------------------FOR TABLE OPERATIONS------------------
+        
         // Sorting Table with DataTables
         $(document).ready(() => {
             $('#myTable').DataTable({
@@ -503,7 +559,7 @@
                 ordering: true // Enable sorting
             });
         });
-
+        
         // Function to handle subscriber table operations
         document.addEventListener("DOMContentLoaded", () => {
             const entriesSelect = document.getElementById("entriesSelect");
@@ -511,10 +567,10 @@
             const table = document.getElementById("myTable");
             const tbody = table.querySelector("tbody");
             const rows = Array.from(tbody.querySelectorAll("tr"));
-
+        
             let rowsPerPage = parseInt(entriesSelect.value);
             let currentPage = 1;
-
+        
             // Update the label to show the number of entries displayed
             const updateEntryInfo = () => {
                 const totalEntries = rows.length;
@@ -522,19 +578,19 @@
                 const showingEnd = Math.min(currentPage * rowsPerPage, totalEntries);
                 entryInfo.textContent = `Showing ${showingStart} to ${showingEnd} of ${totalEntries} entries`;
             };
-
+        
             // Display the rows for the current page
             const displayTableRows = () => {
                 const start = (currentPage - 1) * rowsPerPage;
                 const end = start + rowsPerPage;
-
+        
                 rows.forEach((row, index) => {
                     row.style.display = index >= start && index < end ? "" : "none";
                 });
-
+        
                 updateEntryInfo();
             };
-
+        
             // Update the pagination buttons based on the current page
             const updatePaginationButtons = () => {
                 const totalPages = Math.ceil(rows.length / rowsPerPage);
@@ -543,7 +599,7 @@
                 prevButton.disabled = currentPage === 1;
                 nextButton.disabled = currentPage === totalPages;
             };
-
+        
             // Event listener for changes in the number of entries per page
             entriesSelect.addEventListener("change", () => {
                 rowsPerPage = parseInt(entriesSelect.value);
@@ -551,24 +607,24 @@
                 updatePaginationButtons();
                 displayTableRows();
             });
-
+        
             // Display the initial table rows
             displayTableRows();
         });
-
+        
         // Function to handle custom pagination
         let currentPage = 1;
         const rowsPerPage = 5;
         const tableRows = document.querySelectorAll("#myTableBody tr");
-
+        
         // Goes to a specific page
         const goToPage = (pageNumber) => {
             currentPage = pageNumber;
             updatePaginationButtons();
             displayTableRows();
         };
-
-        //  Pagination Function - Previous Button 
+        
+        // Pagination Function - Previous Button 
         const previousPage = () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -576,8 +632,8 @@
                 displayTableRows();
             }
         };
-
-        //  Pagination Function - Next Button 
+        
+        // Pagination Function - Next Button 
         const nextPage = () => {
             const totalPages = Math.ceil(tableRows.length / rowsPerPage);
             if (currentPage < totalPages) {
@@ -586,7 +642,7 @@
                 displayTableRows();
             }
         };
-
+        
         // Pagination Function
         const updatePaginationButtons = () => {
             const totalPages = Math.ceil(tableRows.length / rowsPerPage);
@@ -595,7 +651,7 @@
             prevButton.disabled = currentPage === 1;
             nextButton.disabled = currentPage === totalPages;
         };
-
+        
         // Displays the table rows for the current page
         const displayTableRows = () => {
             const startIndex = (currentPage - 1) * rowsPerPage;
@@ -604,11 +660,11 @@
                 row.style.display = index >= startIndex && index < endIndex ? "" : "none";
             });
         };
-
+        
         // Initial setup
         updatePaginationButtons();
         displayTableRows();
-
+        
         // Event listener for searching/filtering
         document.getElementById("myInput").addEventListener("input", () => {
             const filter = document.getElementById("myInput").value.toUpperCase();
@@ -622,35 +678,6 @@
                     }
                 });
                 row.style.display = found ? "" : "none";
-            });
-        });
-
-        //--------------------------------------------------------------------------------
-
-        // Function to handle toggle switch confirmation modal
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggleSwitches = document.querySelectorAll('.toggle-switch');
-            let currentToggleSwitch = null;
-            const modalMessage = document.getElementById('modalMessage');
-            const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-
-            toggleSwitches.forEach((toggleSwitch) => {
-                toggleSwitch.addEventListener('change', () => {
-                    currentToggleSwitch = toggleSwitch;
-                    modalMessage.textContent = toggleSwitch.checked ? 'Are you sure you want to ENABLE this module for user IT_ADMIN_MERCHANT?' : 'Are you sure you want to DISABLE this module for user IT_ADMIN_MERCHANT?';
-                    confirmationModal.show();
-                });
-            });
-
-            document.getElementById('noButton').addEventListener('click', () => {
-                if (currentToggleSwitch) {
-                    currentToggleSwitch.checked = !currentToggleSwitch.checked;
-                }
-            });
-
-            document.getElementById('yesButton').addEventListener('click', () => {
-                currentToggleSwitch = null;
-                confirmationModal.hide();
             });
         });
     </script>
